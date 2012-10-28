@@ -14,6 +14,8 @@ define('LI_API_SECRET', 'xxxxxxxxxxxxxxxx'); // "Secret Key"
 define('LI_USER_TOKEN', 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'); // "OAuth User Token"
 define('LI_USER_SECRET', 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'); // "OAuth User Secret"
 
+// The static methods of the Li class want to see these values passed in as an
+// array.
 $credentials = array(
 	'api_key' => LI_API_KEY,
 	'api_secret' => LI_API_SECRET,
