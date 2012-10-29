@@ -9,7 +9,7 @@ These methods are:
 
 	Li::auth_request($credentials, $api_name, $callback_func, $callback_url='', $scope=array()) - Get perms from LI user
 	Li::auth_token($credentials, $api_name) - Get an access token from LI
-	Li::call($credentials, $api_name, $arg1, $arg2,...) - Make an API call with the given args
+	Li::call($credentials, $api_method, $arg1, $arg2,...) - Make an API call with the given args
 	Li::init($credentials, $api_name) - Create an API instance
 
 FILES
