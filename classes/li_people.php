@@ -30,6 +30,8 @@ class Li_People extends Li_Oauth implements Li_Api {
 		// Add people API to class urls property
 		self::$urls['people'] = self::LI_API_URI.'people/';
 		self::$urls['my'] = self::$urls['people'].'~'; // Logged in LI user
+		self::$urls['id'] = self::$urls['people'].'id=';
+		self::$urls['url'] = self::$urls['people'].'url=';
 	}
 
 	/**
@@ -42,11 +44,19 @@ class Li_People extends Li_Oauth implements Li_Api {
 	* @param bool $produce Parse response to match fields?
 	* @return object StdClass
 	*/
-	public function profile($fields, $segment='', $produce=TRUE)
+	public function profile($fields, $segment='', $headers=array(), $produce=TRUE)
 	{
-		$url = $segment ?
+		if ( $segment and $segment != '~' )
+		{
+			$url = (strpos($segment,'/') === FALSE) ?
+				   self::url('id').$segment : self::url('url').urlencode($segment);
+		} else {
+			$url = self::url('my');
+		}
+
+		/*$url = $segment ?
 			   self::$urls['people'].$segment :
-			   self::url('my');
+			   self::url('my');*/
 
 		if (is_string($fields))
 		{
@@ -56,7 +66,7 @@ class Li_People extends Li_Oauth implements Li_Api {
 
 		$fields = (array) $fields;
 		$url .= self::field_reduce($fields);
-		$fetched_profile = self::fast_fetch($url);
+		$fetched_profile = self::fast_fetch($url, array(), 'get', $headers);
 
 		return $produce ?
 			   self::field_produce($fields, $fetched_profile) :
@@ -97,7 +107,7 @@ class Li_People extends Li_Oauth implements Li_Api {
 							foreach ($data->$top_level_key->values as $i => $trash)
 							{
 								$p[$top_level_key][$i][$second_level_key] =
-									$data->$top_level_key->values[$i]->$second_level_key;
+									@$data->$top_level_key->values[$i]->$second_level_key;
 							}
 						}
 					} else {
@@ -110,7 +120,7 @@ class Li_People extends Li_Oauth implements Li_Api {
 							foreach ($data->$top_level_key->values as $i => $trash)
 							{
 								$p[$top_level_key][$i][$second_level_field] =
-									$data->$top_level_key->values[$i]->$second_level_field;
+									@$data->$top_level_key->values[$i]->$second_level_field;
 							}
 						} else {
 							// The second layer value is a scalar. Simple enough.
@@ -148,6 +158,9 @@ class Li_People extends Li_Oauth implements Li_Api {
 				{
 					$p[$key][$i] = (object) $may_be_an_array;
 				}
+			} elseif (is_object($value))
+			{
+				$p[$key] = (array) $value;
 			}
 		}
 

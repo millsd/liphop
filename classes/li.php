@@ -137,7 +137,7 @@ class Li {
 	* @return object StdClass
 	* @access private
 	*/
-	private function exception_handler($e)
+	private static function exception_handler($e)
 	{
 		$response = @json_decode($e->lastResponse);
 		$error_message = $e->getMessage();
