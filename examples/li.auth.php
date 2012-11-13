@@ -53,8 +53,9 @@ if ( ! isset($_GET['oauth_verifier']))
 	$callback_url = $_SERVER['SCRIPT_URI'].'?next='.urlencode($next);
 
 	// The meaty part of asking the LI user for access:
-	Li::auth_request($credentials, 'people', 'save_request_token',
+	$result = Li::auth_request($credentials, 'people', 'save_request_token',
 		$callback_url, $scope);
+	if ( $result->error_code ) echo "d'oh! Error:<pre>".print_r($result,1);
 } else {
 	// Since the $_GET['oauth_verifier'] arg is present, this must be the second
 	// type of HTTP request this script handles: the callback after user has
