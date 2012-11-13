@@ -83,9 +83,10 @@ class Li {
 			$class_name = 'Li_'.ucwords(strtolower($api_name));
 			$instance = self::init($credentials, $api_name);
 
-			if ( ! method_exists($class_name, $method))
+			if ( ! method_exists($instance, $method))
 			{
-				$msg = "API method '$api_method' not found.";
+				$bad_method = get_class($instance).'::'.$method;
+				$msg = "API method '$bad_method' not found.";
 				throw new Exception($msg, self::ERR_API_METHOD);
 			}
 
@@ -95,6 +96,7 @@ class Li {
 				case 1: return $instance->$method($args[0]); break;
 				case 2: return $instance->$method($args[0],$args[1]); break;
 				case 3: return $instance->$method($args[0],$args[1],$args[2]); break;
+				case 4: return $instance->$method($args[0],$args[1],$args[2],$args[3]); break;
 				default: return $instance->$method(implode(',', $args));
 			}
 		} catch (Exception $e) {
@@ -139,6 +141,7 @@ class Li {
 	*/
 	private static function exception_handler($e)
 	{
+		//return $e;
 		$response = @json_decode($e->lastResponse);
 		$error_message = $e->getMessage();
 		$error_message .= isset($response->message) ?

@@ -129,21 +129,26 @@ class Li_People extends Li_Oauth implements Li_Api {
 					}
 				}
 			} else {
-			// First layer field is a string, so assign its value to $p.
-				if (is_object($data->$top_level_field))
+			// First layer field is a string, so assign its value to $p. (if it exists)
+				if (isset($data->$top_level_field))
 				{
-					// If the first layer value is an object make it an array.
-					if (isset($data->$top_level_field->values))
+					if (is_object($data->$top_level_field))
 					{
-						// Use the object's 'values' property as the array.
-						$p[$top_level_field] = $data->$top_level_field->values;
+						// If the first layer value is an object make it an array.
+						if (isset($data->$top_level_field->values))
+						{
+							// Use the object's 'values' property as the array.
+							$p[$top_level_field] = $data->$top_level_field->values;
+						} else {
+							// Object has no 'values' so the array is empty.
+							$p[$top_level_field] = array();
+						}
 					} else {
-						// Object has no 'values' so the array is empty.
-						$p[$top_level_field] = array();
+						// The first layer value is a scalar. Simple enough.
+						$p[$top_level_field] = $data->$top_level_field;
 					}
 				} else {
-					// The first layer value is a scalar. Simple enough.
-					$p[$top_level_field] = $data->$top_level_field;
+					$p[$top_level_field] = NULL;
 				}
 			}
 		}
