@@ -85,7 +85,6 @@ class Li {
 			$credentials = array_shift($args);
 
 			list($api_name, $method) = explode('::', array_shift($args));
-			$class_name = 'Li_'.ucwords(strtolower($api_name));
 			$instance = self::init($credentials, $api_name, FALSE);
 
 			if ( ! method_exists($instance, $method))
@@ -95,15 +94,7 @@ class Li {
 				throw new Exception($msg, self::ERR_API_METHOD);
 			}
 
-			// There's must be better way to do this w/o crushing arrays into strings.
-			switch (count($args))
-			{
-				case 1: return $instance->$method($args[0]); break;
-				case 2: return $instance->$method($args[0],$args[1]); break;
-				case 3: return $instance->$method($args[0],$args[1],$args[2]); break;
-				case 4: return $instance->$method($args[0],$args[1],$args[2],$args[3]); break;
-				default: return $instance->$method(implode(',', $args));
-			}
+			return call_user_func_array(array($instance,$method), $args);
 		} catch (Exception $e) {
 			return self::exception_handler($e);
 		}
@@ -114,7 +105,8 @@ class Li {
 	*
 	* @param array $credentials api_key, api_secret, [user_token, user_secret]
 	* @param string $api_name API class (currently only People available)
-	* @return mixed
+	* @param bool $catch Catch error or throw it? (catch)
+	* @return object
 	*/
 	public static function init($credentials, $api_name, $catch=TRUE)
 	{
@@ -146,8 +138,9 @@ class Li {
 	* Handle an exception
 	*
 	* @param object $e Exception
+	* @param bool $catch Catch error or throw it? (catch)
 	* @return object StdClass
-	* @access private
+	* @access protected
 	*/
 	protected static function exception_handler($e, $catch=TRUE)
 	{
